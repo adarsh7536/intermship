@@ -1,9 +1,11 @@
 /**
  * nav.js - Dynamic Navigation Bar & Mobile Drawer Management
+ * Shows live backend connection status and handles session logout via API.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   renderNavbar();
+  checkBackendConnection();
 });
 
 function renderNavbar() {
@@ -29,6 +31,9 @@ function renderNavbar() {
   if (currentUser) {
     navActionsHtml = `
       <div class="nav-actions">
+        <span id="backend-status-pill" class="badge" style="background:#e0f2fe; color:#0369a1; font-size:0.75rem; display:inline-flex; align-items:center; gap:4px;" title="Backend Server Status">
+          <span style="width:6px; height:6px; border-radius:50%; background:#0284c7;"></span> API Connected
+        </span>
         <a href="create-blog.html" class="btn btn-primary btn-sm">＋ Write</a>
         <div class="author-info" style="cursor: pointer;" title="Logged in as ${currentUser.name}" onclick="location.href='dashboard.html'">
           <div class="author-avatar">${currentUser.avatar || 'U'}</div>
@@ -40,6 +45,9 @@ function renderNavbar() {
   } else {
     navActionsHtml = `
       <div class="nav-actions">
+        <span id="backend-status-pill" class="badge" style="background:#e0f2fe; color:#0369a1; font-size:0.75rem; display:inline-flex; align-items:center; gap:4px;" title="Backend Server Status">
+          <span style="width:6px; height:6px; border-radius:50%; background:#0284c7;"></span> API Connected
+        </span>
         <a href="login.html" class="btn btn-outline btn-sm">Log In</a>
         <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
       </div>
@@ -53,7 +61,7 @@ function renderNavbar() {
     </button>
   `;
 
-  // Insert or update inner content
+  // Brand Logo
   const brandHtml = `
     <a href="index.html" class="brand-logo">
       <div class="logo-icon">B</div>
@@ -80,12 +88,33 @@ function renderNavbar() {
   // Logout listener
   const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-      clearCurrentUser();
+    logoutBtn.addEventListener('click', async () => {
+      if (window.api) {
+        await window.api.logout();
+      } else {
+        clearCurrentUser();
+      }
       showToast('Logged out successfully', 'info');
       setTimeout(() => {
         window.location.href = 'index.html';
       }, 500);
     });
+  }
+}
+
+async function checkBackendConnection() {
+  const pill = document.getElementById('backend-status-pill');
+  if (!pill || !window.api) return;
+
+  const status = await window.api.checkHealth();
+  if (status.online) {
+    pill.style.background = '#dcfce7';
+    pill.style.color = '#15803d';
+    pill.innerHTML = `<span style="width:6px; height:6px; border-radius:50%; background:#22c55e;"></span> API Online`;
+  } else {
+    pill.style.background = '#fef3c7';
+    pill.style.color = '#b45309';
+    pill.innerHTML = `<span style="width:6px; height:6px; border-radius:50%; background:#f59e0b;"></span> Offline Mode`;
+    pill.title = 'Backend server not detected on http://localhost:5000. Run "npm start" to launch Node/Express server.';
   }
 }

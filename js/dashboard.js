@@ -1,5 +1,6 @@
 /**
  * dashboard.js - Author Analytics & Blog Post Management
+ * Connected to Node.js & Express REST API (GET /api/blogs, DELETE /api/blogs/:id)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -7,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initDashboard();
 });
 
-function initDashboard() {
+async function initDashboard() {
   const currentUser = getCurrentUser();
   if (!currentUser) return;
 
@@ -17,22 +18,33 @@ function initDashboard() {
     greetingEl.textContent = `Welcome back, ${currentUser.name}!`;
   }
 
-  renderMetrics();
-  renderArticlesTable();
+  await loadDashboardData();
 }
 
-function renderMetrics() {
-  const posts = getPosts();
+async function loadDashboardData() {
   const currentUser = getCurrentUser();
+  let allPosts = [];
 
-  // Filter posts by logged-in user or show all if demo
-  const userPosts = posts.filter(p => !currentUser.email || p.author.email === currentUser.email);
-  const totalPosts = userPosts.length > 0 ? userPosts.length : posts.length;
-  
-  const relevantPosts = userPosts.length > 0 ? userPosts : posts;
-  const totalLikes = relevantPosts.reduce((acc, p) => acc + (p.likes || 0), 0);
-  
-  const categories = new Set(relevantPosts.map(p => p.category));
+  try {
+    // Fetch articles from backend API
+    allPosts = await api.getBlogs();
+  } catch (err) {
+    console.warn('API error fetching dashboard posts, falling back to local storage:', err);
+    allPosts = getPosts();
+  }
+
+  renderMetrics(allPosts, currentUser);
+  renderArticlesTable(allPosts, currentUser);
+}
+
+function renderMetrics(posts, currentUser) {
+  // Filter posts by logged-in user or show all if demo/initial
+  const userPosts = posts.filter(p => !currentUser.email || (p.author && p.author.email === currentUser.email));
+  const displayPosts = userPosts.length > 0 ? userPosts : posts;
+
+  const totalPosts = displayPosts.length;
+  const totalLikes = displayPosts.reduce((acc, p) => acc + (p.likes || 0), 0);
+  const categories = new Set(displayPosts.map(p => p.category));
 
   const totalPostsEl = document.getElementById('metric-total-posts');
   const totalLikesEl = document.getElementById('metric-total-likes');
@@ -43,16 +55,12 @@ function renderMetrics() {
   if (totalCategoriesEl) totalCategoriesEl.textContent = categories.size;
 }
 
-function renderArticlesTable() {
+function renderArticlesTable(allPosts, currentUser) {
   const tableBody = document.getElementById('posts-table-body');
   if (!tableBody) return;
 
-  const currentUser = getCurrentUser();
-  const allPosts = getPosts();
-  
-  // Show user posts, or fallback to all posts if user hasn't posted yet
-  const posts = allPosts.filter(p => !currentUser.email || p.author.email === currentUser.email);
-  const displayPosts = posts.length > 0 ? posts : allPosts;
+  const userPosts = allPosts.filter(p => !currentUser.email || (p.author && p.author.email === currentUser.email));
+  const displayPosts = userPosts.length > 0 ? userPosts : allPosts;
 
   if (displayPosts.length === 0) {
     tableBody.innerHTML = `
@@ -69,7 +77,7 @@ function renderArticlesTable() {
     <tr>
       <td>
         <div style="font-weight: 600; color: var(--color-text-main);">${escapeHtml(post.title)}</div>
-        <span class="badge ${post.badgeClass || 'badge-tech'}" style="margin-top: 4px;">${post.category}</span>
+        <span class="badge ${post.badgeClass || getCategoryBadgeClass(post.category)}" style="margin-top: 4px;">${escapeHtml(post.category)}</span>
       </td>
       <td>${post.date}</td>
       <td>
@@ -91,11 +99,16 @@ function renderArticlesTable() {
   `).join('');
 }
 
-function handleDeletePost(id) {
+async function handleDeletePost(id) {
   if (confirm('Are you sure you want to delete this blog post? This action cannot be undone.')) {
-    deletePost(id);
-    showToast('Post removed successfully', 'danger');
-    renderMetrics();
-    renderArticlesTable();
+    try {
+      await api.deleteBlog(id);
+      showToast('Post removed successfully from server', 'danger');
+    } catch (err) {
+      console.warn('API delete error, falling back:', err);
+      deletePost(id);
+      showToast('Post removed locally', 'danger');
+    }
+    await loadDashboardData();
   }
 }

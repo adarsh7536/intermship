@@ -1,12 +1,13 @@
 /**
  * blog-detail.js - Full Article View, Likes, & Discussion
+ * Connected to Node.js & Express REST API (GET /api/blogs/:id, POST /api/blogs/:id/like, POST /api/blogs/:id/comments)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   initBlogDetail();
 });
 
-function initBlogDetail() {
+async function initBlogDetail() {
   const container = document.getElementById('article-container');
   if (!container) return;
 
@@ -24,7 +25,21 @@ function initBlogDetail() {
     return;
   }
 
-  const post = getPostById(postId);
+  // Show loading indicator
+  container.innerHTML = `
+    <div style="text-align: center; padding: 4rem; color: var(--color-text-muted);">
+      <div style="font-size: 2rem; margin-bottom: 0.5rem;">⏳</div>
+      <p>Loading article details from backend...</p>
+    </div>
+  `;
+
+  let post = null;
+  try {
+    post = await api.getBlogById(postId);
+  } catch (err) {
+    console.warn('API error fetching article, falling back to local storage:', err);
+    post = getPostById(postId);
+  }
 
   if (!post) {
     container.innerHTML = `
@@ -42,16 +57,18 @@ function initBlogDetail() {
 
   const badgeClass = post.badgeClass || getCategoryBadgeClass(post.category);
   const formattedContent = formatMarkdown(post.content);
+  const authorName = post.author && post.author.name ? post.author.name : 'Author';
+  const authorAvatar = post.author && post.author.avatar ? post.author.avatar : authorName.charAt(0);
 
   container.innerHTML = `
     <article>
       <header class="article-header">
-        <span class="badge ${badgeClass}" style="margin-bottom: 0.75rem;">${post.category}</span>
+        <span class="badge ${badgeClass}" style="margin-bottom: 0.75rem;">${escapeHtml(post.category)}</span>
         <h1>${escapeHtml(post.title)}</h1>
         <div class="flex items-center justify-center gap-4 text-muted" style="color: var(--color-text-muted); font-size: var(--font-size-sm);">
           <div class="author-info">
-            <div class="author-avatar">${post.author.avatar || post.author.name.charAt(0)}</div>
-            <span class="author-name">${post.author.name}</span>
+            <div class="author-avatar">${authorAvatar}</div>
+            <span class="author-name">${escapeHtml(authorName)}</span>
           </div>
           <span>•</span>
           <span>${post.date}</span>
@@ -60,7 +77,7 @@ function initBlogDetail() {
         </div>
       </header>
 
-      <img src="${post.coverImage}" alt="${escapeHtml(post.title)}" class="article-featured-img">
+      <img src="${post.coverImage || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80'}" alt="${escapeHtml(post.title)}" class="article-featured-img">
 
       <div class="article-body">
         ${formattedContent}
@@ -96,54 +113,76 @@ function initBlogDetail() {
     </article>
   `;
 
-  // Like button handler
+  // Like button handler via REST API
   const likeBtn = document.getElementById('like-btn');
-  if (likeBtn) {
-    likeBtn.addEventListener('click', () => {
-      const newCount = likePost(post.id);
-      document.getElementById('like-count').textContent = newCount;
-      likeBtn.classList.add('btn-primary');
-      likeBtn.classList.remove('btn-outline');
-      showToast('Thanks for liking!', 'success');
+  const likeCountEl = document.getElementById('like-count');
+  if (likeBtn && likeCountEl) {
+    likeBtn.addEventListener('click', async () => {
+      try {
+        const newLikes = await api.likeBlog(post.id);
+        likeCountEl.textContent = newLikes;
+        showToast('Thanks for liking!', 'success');
+      } catch (err) {
+        console.warn('API like error, falling back:', err);
+        const newLikes = likePost(post.id);
+        likeCountEl.textContent = newLikes;
+        showToast('Liked!', 'success');
+      }
+      likeBtn.classList.add('pulse');
+      setTimeout(() => likeBtn.classList.remove('pulse'), 400);
     });
   }
 
-  // Comment submission handler
+  // Comment submission handler via REST API
   const commentForm = document.getElementById('comment-form');
-  if (commentForm) {
-    commentForm.addEventListener('submit', (e) => {
+  const commentText = document.getElementById('comment-text');
+  const commentsList = document.getElementById('comments-list');
+  const commentCountEl = document.getElementById('comment-count');
+
+  if (commentForm && commentText && commentsList) {
+    commentForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const text = document.getElementById('comment-text').value.trim();
+      const text = commentText.value.trim();
       if (!text) return;
 
-      const user = getCurrentUser() || { name: 'Guest Reader' };
-      const newComment = {
-        author: user.name,
-        text,
-        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-      };
+      const currentUser = getCurrentUser();
+      const authorName = currentUser ? currentUser.name : 'Anonymous Reader';
 
-      const comments = addCommentToPost(post.id, newComment);
-      document.getElementById('comment-text').value = '';
-      document.getElementById('comments-list').innerHTML = renderComments(comments);
-      document.getElementById('comment-count').textContent = comments.length;
-      showToast('Comment posted!', 'success');
+      try {
+        const comments = await api.addComment(post.id, { author: authorName, text });
+        commentsList.innerHTML = renderComments(comments);
+        if (commentCountEl) commentCountEl.textContent = comments.length;
+        commentText.value = '';
+        showToast('Comment posted successfully!', 'success');
+      } catch (err) {
+        console.warn('API comment error, falling back:', err);
+        const newComment = {
+          author: authorName,
+          text,
+          date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        };
+        const comments = addCommentToPost(post.id, newComment);
+        commentsList.innerHTML = renderComments(comments);
+        if (commentCountEl) commentCountEl.textContent = comments.length;
+        commentText.value = '';
+        showToast('Comment posted (offline mode)', 'info');
+      }
     });
   }
 }
 
 function renderComments(comments) {
-  if (comments.length === 0) {
-    return `<p style="color: var(--color-text-subtle); font-style: italic;">No comments yet. Be the first to share your perspective!</p>`;
+  if (!comments || comments.length === 0) {
+    return `<p class="text-muted" style="color: var(--color-text-muted); font-style: italic;">No comments yet. Start the conversation!</p>`;
   }
 
   return comments.map(c => `
-    <div style="background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 1rem;">
-      <div class="flex items-center justify-between" style="margin-bottom: 0.5rem;">
-        <span style="font-weight: 700; font-size: var(--font-size-sm);">${escapeHtml(c.author)}</span>
-        <span style="color: var(--color-text-subtle); font-size: var(--font-size-xs);">${c.date}</span>
+    <div style="background-color: var(--color-surface); padding: 1rem 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--color-border);">
+      <div class="flex justify-between items-center" style="margin-bottom: 0.5rem;">
+        <span style="font-weight: 600; color: var(--color-text-main); font-size: var(--font-size-sm);">${escapeHtml(c.author)}</span>
+        <span style="font-size: var(--font-size-xs); color: var(--color-text-subtle);">${c.date || 'Recently'}</span>
       </div>
-      <p style="font-size: var(--font-size-sm); color: var(--color-text-muted);">${escapeHtml(c.text)}</p>
+      <p style="color: var(--color-text-muted); font-size: var(--font-size-sm); margin: 0; line-height: 1.5;">${escapeHtml(c.text)}</p>
     </div>
   `).join('');
 }

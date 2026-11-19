@@ -1,0 +1,12 @@
+[
+  {
+    "id": "user-1",
+    "name": "Alex Morgan",
+    "username": "alexm",
+    "email": "alex@example.com",
+    "password": "d36207a85cc0325dd4ed842540b4e6cd6982e8642b7f05557e806d1955686941",
+    "avatar": "AM",
+    "bio": "Frontend enthusiast and open web advocate.",
+    "createdAt": "2026-11-18T10:00:00.000Z"
+  }
+]
