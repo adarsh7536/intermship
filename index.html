@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevBlog - Modern Developer & Tech Publication</title>
+  <meta name="description" content="Explore stories, tutorials, and deep-dives into modern web development, artificial intelligence, and software design.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container">
+      <!-- Injected dynamically by js/nav.js for auth state -->
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      
+      <!-- Hero Section -->
+      <section class="hero">
+        <h1>Stay Curious. Build Better.</h1>
+        <p>A modern publication sharing practical tutorials, architectural design patterns, and reflections on the evolving craft of software engineering.</p>
+      </section>
+
+      <!-- Search & Category Filters -->
+      <section class="filter-bar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" placeholder="Search articles by title, author, or keyword (e.g., CSS, AI)..." aria-label="Search articles">
+        </div>
+        <div class="category-chips">
+          <button class="chip active" data-category="all">All Articles</button>
+          <button class="chip" data-category="Web Dev">Web Dev</button>
+          <button class="chip" data-category="AI">AI & Machine Learning</button>
+          <button class="chip" data-category="Design">Design Systems</button>
+          <button class="chip" data-category="Technology">Technology</button>
+        </div>
+      </section>
+
+      <!-- Blog Posts Feed Grid -->
+      <section aria-label="Latest Articles">
+        <div class="blog-grid" id="blog-grid">
+          <!-- Injected dynamically by js/home.js -->
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="brand-logo" style="font-size: var(--font-size-lg);">
+        <div class="logo-icon" style="width: 28px; height: 28px; font-size: 0.9rem;">B</div>
+        <span>Dev<span>Blog</span></span>
+      </div>
+      <p style="color: var(--color-text-muted); font-size: var(--font-size-xs);">
+        &copy; 2026 DevBlog Application. Built with Semantic HTML, CSS Grid/Flexbox & Vanilla JS.
+      </p>
+      <ul class="footer-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="create-blog.html">Write Post</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

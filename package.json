@@ -1,0 +1,20 @@
+{
+  "name": "devblog-responsive-app",
+  "version": "1.0.0",
+  "description": "A modern responsive Blog Application built with HTML5, CSS3, and JavaScript.",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 3000",
+    "serve": "npx serve -l 3000 ."
+  },
+  "keywords": [
+    "html5",
+    "css3",
+    "javascript",
+    "blog",
+    "responsive-design",
+    "localStorage"
+  ],
+  "author": "DevBlog Team",
+  "license": "MIT"
+}

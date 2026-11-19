@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create an Account - DevBlog</title>
+  <meta name="description" content="Join DevBlog to publish stories, tutorials, and engage with the developer community.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container">
+      <!-- Injected dynamically by js/nav.js -->
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="auth-wrapper" style="max-width: 520px;">
+        <div class="form-card">
+          
+          <div class="form-header">
+            <h2>Join the Community</h2>
+            <p>Publish your ideas, build an audience, and learn with fellow engineers.</p>
+          </div>
+
+          <!-- Alert for validation errors -->
+          <div id="auth-error" class="alert alert-danger" role="alert"></div>
+
+          <form id="register-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" class="form-control" placeholder="e.g. Sarah Connor" required autocomplete="name">
+              </div>
+              <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" class="form-control" placeholder="e.g. sconnor" required autocomplete="username">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Work or Personal Email</label>
+              <input type="email" id="email" class="form-control" placeholder="you@domain.com" required autocomplete="email">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" class="form-control" placeholder="Min 6 characters" required autocomplete="new-password">
+              </div>
+              <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" class="form-control" placeholder="Repeat password" required autocomplete="new-password">
+              </div>
+            </div>
+
+            <div class="form-group form-check" style="margin-bottom: var(--space-6);">
+              <input type="checkbox" id="terms" required checked>
+              <label for="terms" style="margin-bottom: 0; font-weight: normal;">
+                I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Create Author Account</button>
+          </form>
+
+          <p style="text-align: center; margin-top: var(--space-6); font-size: var(--font-size-sm); color: var(--color-text-muted);">
+            Already have an account? <a href="login.html" style="font-weight: 600;">Log in here</a>
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="brand-logo" style="font-size: var(--font-size-lg);">
+        <div class="logo-icon" style="width: 28px; height: 28px; font-size: 0.9rem;">B</div>
+        <span>Dev<span>Blog</span></span>
+      </div>
+      <p style="color: var(--color-text-muted); font-size: var(--font-size-xs);">
+        &copy; 2026 DevBlog. Built with pure HTML5, CSS3, and modern Vanilla JS.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

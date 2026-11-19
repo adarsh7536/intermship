@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Author Dashboard - DevBlog</title>
+  <meta name="description" content="Manage your published articles, view performance metrics, and draft new content.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container">
+      <!-- Injected dynamically by js/nav.js -->
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      
+      <!-- Dashboard Header -->
+      <section class="dashboard-header">
+        <div class="dashboard-title">
+          <h1 id="user-greeting">Author Dashboard</h1>
+          <p style="color: var(--color-text-muted); margin-top: 4px;">Monitor your articles, performance, and audience engagement.</p>
+        </div>
+        <div class="flex gap-3">
+          <a href="index.html" class="btn btn-outline">← View Feed</a>
+          <a href="create-blog.html" class="btn btn-primary">＋ Write New Article</a>
+        </div>
+      </section>
+
+      <!-- Metrics / Stats Grid -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Published Posts</h3>
+            <div class="stat-value" id="metric-total-posts">0</div>
+          </div>
+          <div class="stat-icon">📝</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Community Likes</h3>
+            <div class="stat-value" id="metric-total-likes">0</div>
+          </div>
+          <div class="stat-icon">❤️</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Topics Covered</h3>
+            <div class="stat-value" id="metric-total-categories">0</div>
+          </div>
+          <div class="stat-icon">🏷️</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Author Tier</h3>
+            <div class="stat-value" style="font-size: var(--font-size-xl); color: var(--color-primary); margin-top: 8px;">Featured</div>
+          </div>
+          <div class="stat-icon">⭐</div>
+        </div>
+      </section>
+
+      <!-- Manage Articles Table -->
+      <section class="table-container">
+        <div class="table-header">
+          <h2>Your Articles</h2>
+          <a href="create-blog.html" class="btn btn-primary btn-sm">＋ New Post</a>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Title & Category</th>
+                <th>Published Date</th>
+                <th>Engagement</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="posts-table-body">
+              <!-- Injected dynamically by js/dashboard.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="brand-logo" style="font-size: var(--font-size-lg);">
+        <div class="logo-icon" style="width: 28px; height: 28px; font-size: 0.9rem;">B</div>
+        <span>Dev<span>Blog</span></span>
+      </div>
+      <p style="color: var(--color-text-muted); font-size: var(--font-size-xs);">
+        &copy; 2026 DevBlog Application. All posts stored locally in browser storage.
+      </p>
+      <ul class="footer-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="create-blog.html">Create Blog</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

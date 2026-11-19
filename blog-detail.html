@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Article - DevBlog</title>
+  <meta name="description" content="Read full technical article on DevBlog.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container">
+      <!-- Injected dynamically by js/nav.js -->
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      
+      <div style="margin-bottom: var(--space-6);">
+        <a href="index.html" class="btn btn-outline btn-sm">← Back to All Articles</a>
+      </div>
+
+      <!-- Article Details Container -->
+      <div id="article-container">
+        <!-- Injected dynamically by js/blog-detail.js -->
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="brand-logo" style="font-size: var(--font-size-lg);">
+        <div class="logo-icon" style="width: 28px; height: 28px; font-size: 0.9rem;">B</div>
+        <span>Dev<span>Blog</span></span>
+      </div>
+      <p style="color: var(--color-text-muted); font-size: var(--font-size-xs);">
+        &copy; 2026 DevBlog Application. Built with Semantic HTML, CSS Grid/Flexbox & Vanilla JS.
+      </p>
+      <ul class="footer-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="create-blog.html">Write Post</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/blog-detail.js"></script>
+</body>
+</html>
